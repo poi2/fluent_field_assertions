@@ -10,7 +10,7 @@ struct User {
 #[derive(FluentFieldAssertions, Debug, Eq, PartialEq)]
 struct Container<T>
 where
-    T: Eq + PartialEq + Debug,
+    T: Eq + Debug,
 {
     value: T,
 }

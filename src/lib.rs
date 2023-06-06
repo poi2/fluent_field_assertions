@@ -17,7 +17,7 @@ extern crate proc_macro2;
 /// ```rust
 /// use fluent_field_assertions::FluentFieldAssertions;
 ///
-/// #[derive(Debug, Eq, PartialEq, FluentFieldAssertions)]
+/// #[derive(FluentFieldAssertions, Debug, Eq, PartialEq)]
 /// struct User {
 ///     id: usize,
 ///     name: String,
@@ -36,10 +36,10 @@ extern crate proc_macro2;
 /// use core::fmt::Debug;
 /// use fluent_field_assertions::FluentFieldAssertions;
 ///
-/// #[derive(Debug, Eq, PartialEq, FluentFieldAssertions)]
+/// #[derive(FluentFieldAssertions, Debug, Eq, PartialEq)]
 /// struct Point<T>
 /// where
-///     T: Eq + PartialEq + Debug,
+///     T: Eq + Debug,
 /// {
 ///     x: T,
 ///     y: T,
@@ -97,7 +97,7 @@ fn generate_method(field: &Field) -> TokenStream2 {
         #[inline(always)]
         fn #method_name(&self, expected: #field_type) -> &Self
         where
-            #field_type: Eq + PartialEq + core::fmt::Debug
+            #field_type: Eq + core::fmt::Debug
         {
             pretty_assertions::assert_eq!(self.#field_name, expected);
             self
