@@ -1,7 +1,13 @@
 [package]
 name = "fluent_field_assertions"
+description = "FluentFieldAssertions is a procedural macro for generating fluent assertions on fields."
 version = "0.1.0"
 edition = "2021"
+authors = ["Daisuke Ito <daisuke.ito.cs@gmail.com>"]
+license = "MIT"
+keywords = ["macro", "testing", "assertions", "assert", "fluent"]
+readme = "README.md"
+repository = "https://github.com/poi2/fluent_field_assertions"
 
 [lib]
 proc-macro = true
