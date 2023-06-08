@@ -99,7 +99,7 @@ fn generate_method(field: &Field) -> TokenStream2 {
         where
             #field_type: Eq + core::fmt::Debug
         {
-            pretty_assertions::assert_eq!(self.#field_name, expected);
+            assert_eq!(self.#field_name, expected);
             self
         }
     }
