@@ -1,7 +1,7 @@
 use proc_macro::TokenStream;
 use proc_macro2::{Ident, Span, TokenStream as TokenStream2};
 use syn::{
-    parse_macro_input, Data, DataStruct, DeriveInput, Field, ImplGenerics, TypeGenerics,
+    parse_macro_input, Data, DataStruct, DeriveInput, Field, ImplGenerics, Type, TypeGenerics,
     WhereClause,
 };
 
@@ -23,12 +23,16 @@ extern crate proc_macro2;
 ///     name: String,
 /// }
 ///
-/// User {
+/// let user = User {
 ///     id: 1,
 ///     name: "Alice".to_string(),
-/// }
-/// .id_eq(1)
-/// .name_eq("Alice".to_string());
+/// };
+///
+/// user.id_eq(1)
+///     .name_eq("Alice".to_string());
+///
+/// user.id_ne(2)
+///     .name_ne("Bob".to_string());
 /// ```
 ///
 /// # Example for generics struct
@@ -45,7 +49,10 @@ extern crate proc_macro2;
 ///     y: T,
 /// }
 ///
-/// Point { x: 1, y: 2 }.x_eq(1).y_eq(2);
+/// let point = Point { x: 1, y: 2 };
+///
+/// point.x_eq(1).y_eq(2);
+/// point.x_ne(9).y_ne(9);
 /// ```
 #[proc_macro_derive(FluentFieldAssertions)]
 pub fn fluent_field_assertions(input: TokenStream) -> TokenStream {
@@ -55,7 +62,10 @@ pub fn fluent_field_assertions(input: TokenStream) -> TokenStream {
 
     let gen = if let Data::Struct(DataStruct { ref fields, .. }) = ast.data {
         let (impl_generics, ty_generics, where_clause) = &ast.generics.split_for_impl();
-        let method_tokens = fields.iter().map(|field| generate_method(field)).collect();
+        let method_tokens = fields
+            .iter()
+            .flat_map(|field| generate_methods(field))
+            .collect();
 
         generate_impl(
             impl_generics,
@@ -85,13 +95,21 @@ fn generate_impl(
     }
 }
 
-fn generate_method(field: &Field) -> TokenStream2 {
+fn generate_methods(field: &Field) -> Vec<TokenStream2> {
     let field_name = field
         .clone()
         .ident
         .unwrap_or_else(|| panic!("Field name must be present."));
-    let method_name = Ident::new(&format!("{}_eq", field_name), Span::call_site());
     let field_type = field.ty.clone();
+
+    vec![
+        generate_eq_method(&field_name, &field_type),
+        generate_ne_method(&field_name, &field_type),
+    ]
+}
+
+fn generate_eq_method(field_name: &Ident, field_type: &Type) -> TokenStream2 {
+    let method_name = Ident::new(&format!("{}_eq", field_name), Span::call_site());
 
     quote! {
         #[inline(always)]
@@ -100,6 +118,21 @@ fn generate_method(field: &Field) -> TokenStream2 {
             #field_type: Eq + core::fmt::Debug
         {
             assert_eq!(self.#field_name, expected);
+            self
+        }
+    }
+}
+
+fn generate_ne_method(field_name: &Ident, field_type: &Type) -> TokenStream2 {
+    let method_name = Ident::new(&format!("{}_ne", field_name), Span::call_site());
+
+    quote! {
+        #[inline(always)]
+        fn #method_name(&self, expected: #field_type) -> &Self
+        where
+            #field_type: Eq + core::fmt::Debug
+        {
+            assert_ne!(self.#field_name, expected);
             self
         }
     }
