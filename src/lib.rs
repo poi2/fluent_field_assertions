@@ -105,6 +105,7 @@ fn generate_methods(field: &Field) -> Vec<TokenStream2> {
     vec![
         generate_eq_method(&field_name, &field_type),
         generate_ne_method(&field_name, &field_type),
+        generate_satisfies_method(&field_name, &field_type),
     ]
 }
 
@@ -133,6 +134,18 @@ fn generate_ne_method(field_name: &Ident, field_type: &Type) -> TokenStream2 {
             #field_type: Eq + core::fmt::Debug
         {
             assert_ne!(self.#field_name, expected);
+            self
+        }
+    }
+}
+
+fn generate_satisfies_method(field_name: &Ident, field_type: &Type) -> TokenStream2 {
+    let method_name = Ident::new(&format!("{}_satisfies", field_name), Span::call_site());
+
+    quote! {
+        #[inline(always)]
+        fn #method_name(&self, pred: impl FnOnce(&#field_type) -> bool) -> &Self {
+            assert!(pred(&self.#field_name));
             self
         }
     }
