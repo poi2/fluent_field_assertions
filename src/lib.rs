@@ -62,10 +62,7 @@ pub fn fluent_field_assertions(input: TokenStream) -> TokenStream {
 
     let gen = if let Data::Struct(DataStruct { ref fields, .. }) = ast.data {
         let (impl_generics, ty_generics, where_clause) = &ast.generics.split_for_impl();
-        let method_tokens = fields
-            .iter()
-            .flat_map(|field| generate_methods(field))
-            .collect();
+        let method_tokens = fields.iter().flat_map(generate_methods).collect();
 
         generate_impl(
             impl_generics,
