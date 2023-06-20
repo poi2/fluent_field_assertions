@@ -58,6 +58,11 @@ mod test {
     }
 
     #[rstest]
+    fn satisfies() {
+        hello_world().value_satisfies(|value| value.contains("world"));
+    }
+
+    #[rstest]
     #[should_panic]
     #[case::valid_value("Hello, world!".to_string())]
     #[case::invalid_value("Hello, Rust!".to_string())]
