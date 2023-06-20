@@ -25,6 +25,8 @@ user.id_eq(1)
 
 user.id_ne(2)
     .name_ne("Bob".to_string());
+
+user.name_satisfies(|name| name.starts_with("A"));
 ```
 
 You can also use in generic struct.
