@@ -28,11 +28,9 @@ extern crate proc_macro2;
 ///     name: "Alice".to_string(),
 /// };
 ///
-/// user.id_eq(1)
-///     .name_eq("Alice".to_string());
-///
-/// user.id_ne(2)
-///     .name_ne("Bob".to_string());
+/// user.name_eq("Alice".to_string())
+///     .name_ne("Bob".to_string())
+///     .name_satisfies(|name| name.starts_with("A"));
 /// ```
 ///
 /// # Example for generics struct
@@ -51,8 +49,7 @@ extern crate proc_macro2;
 ///
 /// let point = Point { x: 1, y: 2 };
 ///
-/// point.x_eq(1).y_eq(2);
-/// point.x_ne(9).y_ne(9);
+/// point.x_eq(1).y_ne(9).x_satisfies(|x| x > &0);
 /// ```
 #[proc_macro_derive(FluentFieldAssertions)]
 pub fn fluent_field_assertions(input: TokenStream) -> TokenStream {
