@@ -108,7 +108,7 @@ fn generate_eq_method(field_name: &Ident, field_type: &Type) -> TokenStream2 {
 
     quote! {
         #[inline(always)]
-        fn #method_name(&self, expected: #field_type) -> &Self
+        pub fn #method_name(&self, expected: #field_type) -> &Self
         where
             #field_type: Eq + core::fmt::Debug
         {
@@ -123,7 +123,7 @@ fn generate_ne_method(field_name: &Ident, field_type: &Type) -> TokenStream2 {
 
     quote! {
         #[inline(always)]
-        fn #method_name(&self, expected: #field_type) -> &Self
+        pub fn #method_name(&self, expected: #field_type) -> &Self
         where
             #field_type: Eq + core::fmt::Debug
         {
@@ -138,7 +138,7 @@ fn generate_satisfies_method(field_name: &Ident, field_type: &Type) -> TokenStre
 
     quote! {
         #[inline(always)]
-        fn #method_name(&self, pred: impl FnOnce(&#field_type) -> bool) -> &Self {
+        pub fn #method_name(&self, pred: impl FnOnce(&#field_type) -> bool) -> &Self {
             assert!(pred(&self.#field_name));
             self
         }
