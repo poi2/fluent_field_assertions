@@ -4,7 +4,7 @@ description = """
 FluentFieldAssertions is a library that allows you to write tests in a natural language-like syntax.
 With this library, you can perform field assertions in an intuitive and readable way.
 """
-version = "0.1.4"
+version = "0.2.0"
 edition = "2021"
 authors = ["Daisuke Ito <daisuke.ito.cs@gmail.com>"]
 license = "MIT"
