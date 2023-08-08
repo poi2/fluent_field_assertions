@@ -125,6 +125,7 @@ fn generate_eq_method(field_name: &Ident, field_type: &Type) -> TokenStream2 {
 
     quote! {
         #[inline(always)]
+        #[track_caller]
         pub fn #method_name(&self, expected: &#field_type) -> &Self
         {
             assert_eq!(&self.#field_name, expected);
@@ -138,6 +139,7 @@ fn generate_ne_method(field_name: &Ident, field_type: &Type) -> TokenStream2 {
 
     quote! {
         #[inline(always)]
+        #[track_caller]
         pub fn #method_name(&self, expected: &#field_type) -> &Self
         {
             assert_ne!(&self.#field_name, expected);
@@ -151,6 +153,7 @@ fn generate_satisfies_method(field_name: &Ident, field_type: &Type) -> TokenStre
 
     quote! {
         #[inline(always)]
+        #[track_caller]
         pub fn #method_name(&self, pred: impl FnOnce(&#field_type) -> bool) -> &Self {
             assert!(pred(&self.#field_name));
             self
