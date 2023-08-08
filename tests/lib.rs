@@ -1,13 +1,14 @@
 use core::fmt::Debug;
 use fluent_field_assertions::FluentFieldAssertions;
 
-#[derive(FluentFieldAssertions, Debug, Eq, PartialEq)]
+#[allow(unused)]
+#[derive(FluentFieldAssertions)]
 struct User {
     id: usize,
     name: String,
 }
 
-#[derive(FluentFieldAssertions, Debug, Eq, PartialEq)]
+#[derive(FluentFieldAssertions)]
 struct Container<T>
 where
     T: Eq + Debug,
@@ -38,7 +39,7 @@ mod test {
     #[should_panic]
     #[case::invalid_name("Bob".to_string())]
     fn can_be_checked_equal_of_struct(#[case] expected: String) {
-        alice().name_eq(expected);
+        alice().name_eq(&expected);
     }
 
     #[rstest]
@@ -46,7 +47,7 @@ mod test {
     #[case::valid_name("Alice".to_string())]
     #[case::invalid_name("Bob".to_string())]
     fn can_be_checked_not_equal_of_struct(#[case] expected: String) {
-        alice().name_ne(expected);
+        alice().name_ne(&expected);
     }
 
     #[rstest]
@@ -54,7 +55,7 @@ mod test {
     #[should_panic]
     #[case::invalid_value("Hello, Rust!".to_string())]
     fn can_be_checked_equal_of_generics_struct(#[case] expected: String) {
-        hello_world().value_eq(expected);
+        hello_world().value_eq(&expected);
     }
 
     #[rstest]
@@ -62,7 +63,7 @@ mod test {
     #[case::valid_value("Hello, world!".to_string())]
     #[case::invalid_value("Hello, Rust!".to_string())]
     fn can_be_checked_not_equal_of_generics_struct(#[case] expected: String) {
-        hello_world().value_ne(expected);
+        hello_world().value_ne(&expected);
     }
 
     #[test]
@@ -74,7 +75,7 @@ mod test {
     fn uses_in_readme_work_properly() {
         use fluent_field_assertions::FluentFieldAssertions;
 
-        #[derive(FluentFieldAssertions, Debug, Eq, PartialEq)]
+        #[derive(FluentFieldAssertions)]
         struct User {
             id: usize,
             name: String,
@@ -88,8 +89,8 @@ mod test {
         };
 
         // You can write tests in a natural language-like syntax.
-        user.id_eq(1)
-            .name_eq("Alice".to_string())
+        user.id_eq(&1)
+            .name_eq(&"Alice".to_string())
             .age_satisfies(|age| age < &18);
 
         // Same as above.
@@ -102,25 +103,30 @@ mod test {
     fn struct_examples_in_readme_work_properly() {
         use fluent_field_assertions::FluentFieldAssertions;
 
-        #[derive(FluentFieldAssertions, Debug, Eq, PartialEq)]
+        #[derive(FluentFieldAssertions)]
         struct User {
             id: usize,
             name: String,
             age: usize,
+            // You can skip assertion_methods for some fields.
+            #[assertions(skip)]
+            #[allow(dead_code)]
+            score: f64,
         }
 
         let user = User {
             id: 1,
             name: "Alice".to_string(),
             age: 17,
+            score: 95.0,
         };
 
         // You can use `{field}_eq` to assert_eq!.
-        user.name_eq("Alice".to_string());
+        user.name_eq(&"Alice".to_string());
         assert_eq!(user.name, "Alice".to_string()); // Same as above.
 
         // You can use `{field}_ne` to assert_ne!.
-        user.name_ne("Bob".to_string());
+        user.name_ne(&"Bob".to_string());
         assert_ne!(user.name, "Bob".to_string()); // Same as above.
 
         // You can use `{field}_satisfies` to assert!.
@@ -128,8 +134,8 @@ mod test {
         assert!(user.name.starts_with('A')); // Same as above.
 
         // You can chain assertions as method calls.
-        user.id_eq(1)
-            .name_eq("Alice".to_string())
+        user.id_eq(&1)
+            .name_eq(&"Alice".to_string())
             .age_satisfies(|age| age < &18);
 
         // Same as above.
@@ -143,7 +149,7 @@ mod test {
         use core::fmt::Debug;
         use fluent_field_assertions::FluentFieldAssertions;
 
-        #[derive(FluentFieldAssertions, Debug, Eq, PartialEq)]
+        #[derive(FluentFieldAssertions)]
         struct Point<T>
         // Generics type `T` must implement trait `Eq` and `Display`.
         where
@@ -152,10 +158,19 @@ mod test {
             x: T,
             y: T,
             z: T,
+            // You can skip assertion_methods for some fields.
+            #[assertions(skip)]
+            #[allow(dead_code)]
+            t: T,
         }
 
-        let point = Point { x: 1, y: 2, z: 3 };
+        let point = Point {
+            x: 1,
+            y: 2,
+            z: 3,
+            t: 4,
+        };
 
-        point.x_eq(1).y_ne(9).z_satisfies(|z| z % 3 == 0);
+        point.x_eq(&1).y_ne(&9).z_satisfies(|z| z % 3 == 0);
     }
 }

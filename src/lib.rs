@@ -17,20 +17,28 @@ extern crate proc_macro2;
 /// ```rust
 /// use fluent_field_assertions::FluentFieldAssertions;
 ///
-/// #[derive(FluentFieldAssertions, Debug, Eq, PartialEq)]
+/// #[derive(FluentFieldAssertions)]
 /// struct User {
 ///     id: usize,
 ///     name: String,
+///     age: usize,
+///     // You can skip assertions for some fields.
+///     #[assertions(skip)]
+///     score: f64,
 /// }
 ///
 /// let user = User {
 ///     id: 1,
 ///     name: "Alice".to_string(),
+///     age: 17,
+///     score: 95.0,
 /// };
 ///
-/// user.name_eq("Alice".to_string())
-///     .name_ne("Bob".to_string())
-///     .name_satisfies(|name| name.starts_with("A"));
+/// user.id_eq(&1)
+///     .name_eq(&"Alice".to_string())
+///     .name_ne(&"Bob".to_string())
+///     .name_satisfies(|name| name.starts_with("A"))
+///     .age_eq(&17);
 /// ```
 ///
 /// # Example for generics struct
@@ -38,18 +46,25 @@ extern crate proc_macro2;
 /// use core::fmt::Debug;
 /// use fluent_field_assertions::FluentFieldAssertions;
 ///
-/// #[derive(FluentFieldAssertions, Debug, Eq, PartialEq)]
+/// #[derive(FluentFieldAssertions)]
 /// struct Point<T>
+/// // Generics type `T` must implement trait `Eq` and `Display`.
 /// where
 ///     T: Eq + Debug,
 /// {
 ///     x: T,
 ///     y: T,
+///     z: T,
+///     // You can skip assertions for some fields.
+///     #[assertions(skip)]
+///     t: T,
 /// }
 ///
-/// let point = Point { x: 1, y: 2 };
+/// let point = Point { x: 1, y: 2, z: 3, t: 4 };
 ///
-/// point.x_eq(1).y_ne(9).x_satisfies(|x| x > &0);
+/// point.x_eq(&1)
+///     .y_ne(&9) // Note that `y` is NOT `9`.
+///     .z_satisfies(|z| z > &0);
 /// ```
 #[proc_macro_derive(FluentFieldAssertions, attributes(assertions))]
 pub fn fluent_field_assertions(input: TokenStream) -> TokenStream {

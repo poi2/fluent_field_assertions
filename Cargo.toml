@@ -22,4 +22,5 @@ quote = "1"
 syn = "2"
 
 [dev-dependencies]
+derive-getters = "0"
 rstest = "0"
