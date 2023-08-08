@@ -125,11 +125,9 @@ fn generate_eq_method(field_name: &Ident, field_type: &Type) -> TokenStream2 {
 
     quote! {
         #[inline(always)]
-        pub fn #method_name(&self, expected: #field_type) -> &Self
-        where
-            #field_type: Eq + core::fmt::Debug
+        pub fn #method_name(&self, expected: &#field_type) -> &Self
         {
-            assert_eq!(self.#field_name, expected);
+            assert_eq!(&self.#field_name, expected);
             self
         }
     }
@@ -140,11 +138,9 @@ fn generate_ne_method(field_name: &Ident, field_type: &Type) -> TokenStream2 {
 
     quote! {
         #[inline(always)]
-        pub fn #method_name(&self, expected: #field_type) -> &Self
-        where
-            #field_type: Eq + core::fmt::Debug
+        pub fn #method_name(&self, expected: &#field_type) -> &Self
         {
-            assert_ne!(self.#field_name, expected);
+            assert_ne!(&self.#field_name, expected);
             self
         }
     }
