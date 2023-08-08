@@ -23,7 +23,7 @@ FluentFieldAssertions generated the following methods for each field.
 ```rust
 use fluent_field_assertions::FluentFieldAssertions;
 
-#[derive(FluentFieldAssertions, Debug, Eq, PartialEq)]
+#[derive(FluentFieldAssertions)]
 struct User {
     id: usize,
     name: String,
@@ -37,8 +37,8 @@ let user = User {
 };
 
 // You can write tests in a natural language-like syntax.
-user.id_eq(1)
-    .name_eq("Alice".to_string())
+user.id_eq(&1)
+    .name_eq(&"Alice".to_string())
     .age_satisfies(|age| age < &18);
 
 // Same as above.
@@ -57,25 +57,29 @@ Each field must implement the traits `Eq` and `Display`.
 ```rust
 use fluent_field_assertions::FluentFieldAssertions;
 
-#[derive(FluentFieldAssertions, Debug, Eq, PartialEq)]
+#[derive(FluentFieldAssertions)]
 struct User {
     id: usize,
     name: String,
     age: usize,
+    // You can skip assertion_methods for some fields.
+    #[assertions(skip)]
+    score: f64,
 }
 
 let user = User {
     id: 1,
     name: "Alice".to_string(),
     age: 17,
+    score: 95.0,
 };
 
 // You can use `{field}_eq` to assert_eq!.
-user.name_eq("Alice".to_string());
+user.name_eq(&"Alice".to_string());
 assert_eq!(user.name, "Alice".to_string()); // Same as above.
 
 // You can use `{field}_ne` to assert_ne!.
-user.name_ne("Bob".to_string());
+user.name_ne(&"Bob".to_string());
 assert_ne!(user.name, "Bob".to_string()); // Same as above.
 
 // You can use `{field}_satisfies` to assert!.
@@ -83,8 +87,8 @@ user.name_satisfies(|name| name.starts_with('A'));
 assert!(user.name.starts_with('A')); // Same as above.
 
 // You can chain assertions as method calls.
-user.id_eq(1)
-    .name_eq("Alice".to_string())
+user.id_eq(&1)
+    .name_eq(&"Alice".to_string())
     .age_satisfies(|age| age < &18);
 
 // Same as above.
@@ -102,7 +106,7 @@ In that case, Generics type `T` must implement the traits `Eq` and `Display`.
 use core::fmt::Debug;
 use fluent_field_assertions::FluentFieldAssertions;
 
-#[derive(FluentFieldAssertions, Debug, Eq, PartialEq)]
+#[derive(FluentFieldAssertions)]
 struct Point<T>
 // Generics type `T` must implement trait `Eq` and `Display`.
 where
@@ -111,9 +115,18 @@ where
     x: T,
     y: T,
     z: T,
+    // You can skip assertion_methods for some fields.
+    #[assertions(skip)]
+    #[allow(dead_code)]
+    t: T,
 }
 
-let point = Point { x: 1, y: 2, z: 3 };
+let point = Point {
+    x: 1,
+    y: 2,
+    z: 3,
+    t: 4,
+};
 
-point.x_eq(1).y_ne(9).z_satisfies(|z| z % 3 == 0);
+point.x_eq(&1).y_ne(&9).z_satisfies(|z| z % 3 == 0);
 ```
