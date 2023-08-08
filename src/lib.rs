@@ -125,7 +125,7 @@ fn generate_methods(field: &Field) -> Vec<TokenStream2> {
     });
 
     if skip {
-        return vec![];
+        vec![]
     } else {
         vec![
             generate_eq_method(&field_name, &field_type),
