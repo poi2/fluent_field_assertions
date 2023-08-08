@@ -51,7 +51,7 @@ extern crate proc_macro2;
 ///
 /// point.x_eq(1).y_ne(9).x_satisfies(|x| x > &0);
 /// ```
-#[proc_macro_derive(FluentFieldAssertions)]
+#[proc_macro_derive(FluentFieldAssertions, attributes(assertions))]
 pub fn fluent_field_assertions(input: TokenStream) -> TokenStream {
     let ast = parse_macro_input!(input as DeriveInput);
 
@@ -96,11 +96,28 @@ fn generate_methods(field: &Field) -> Vec<TokenStream2> {
         .unwrap_or_else(|| panic!("Field name must be present."));
     let field_type = field.ty.clone();
 
-    vec![
-        generate_eq_method(&field_name, &field_type),
-        generate_ne_method(&field_name, &field_type),
-        generate_satisfies_method(&field_name, &field_type),
-    ]
+    let skip = field.attrs.iter().any(|attr| {
+        attr.path().is_ident("assertions")
+            && attr
+                .parse_nested_meta(|meta| {
+                    if meta.path.is_ident("skip") {
+                        Ok(())
+                    } else {
+                        Err(meta.error("unrecognized repr"))
+                    }
+                })
+                .is_ok()
+    });
+
+    if skip {
+        return vec![];
+    } else {
+        vec![
+            generate_eq_method(&field_name, &field_type),
+            generate_ne_method(&field_name, &field_type),
+            generate_satisfies_method(&field_name, &field_type),
+        ]
+    }
 }
 
 fn generate_eq_method(field_name: &Ident, field_type: &Type) -> TokenStream2 {
