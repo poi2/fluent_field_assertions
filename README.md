@@ -52,7 +52,7 @@ assert!(user.age < 18);
 ### Basic struct
 
 You can use it in the basic struct.  
-Each field must implement the traits `Eq` and `Display`.
+Each field must implement the traits `Eq` and `Debug`.
 
 ```rust
 use fluent_field_assertions::FluentFieldAssertions;
@@ -100,7 +100,7 @@ assert!(user.age < 18);
 ### Generic struct
 
 You can also use it in the generic struct.  
-In that case, Generics type `T` must implement the traits `Eq` and `Display`.
+In that case, Generics type `T` must implement the traits `Eq` and `Debug`.
 
 ```rust
 use core::fmt::Debug;
@@ -108,7 +108,7 @@ use fluent_field_assertions::FluentFieldAssertions;
 
 #[derive(FluentFieldAssertions)]
 struct Point<T>
-// Generics type `T` must implement trait `Eq` and `Display`.
+// Generics type `T` must implement trait `Eq` and `Debug`.
 where
     T: Eq + Debug,
 {
