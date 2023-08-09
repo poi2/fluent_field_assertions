@@ -48,7 +48,7 @@ extern crate proc_macro2;
 ///
 /// #[derive(FluentFieldAssertions)]
 /// struct Point<T>
-/// // Generics type `T` must implement trait `Eq` and `Display`.
+/// // Generics type `T` must implement trait `Eq` and `Debug`.
 /// where
 ///     T: Eq + Debug,
 /// {
